@@ -1,5 +1,5 @@
 // nome e versão do cache
-const CACHE_NAME = 'identiplanta-cache-v01';
+const CACHE_NAME = 'identiplanta-cache-v05';
 
 // arquivos essenciais offline
 const urlsToCache = [

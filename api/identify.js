@@ -1,32 +1,30 @@
-// /api/identify.js - VERSÃO FINAL
+// /api/identify.js - VERSÃO FINALÍSSIMA
 
 const FormData = require('form-data');
-// O 'fetch' já vem com a Vercel, não precisamos do 'node-fetch'
-// const fetch = require('node-fetch');
+const fetch = require('node-fetch'); // <-- A LINHA DA SOLUÇÃO
 
 export default async function handler(request, response) {
-  // A Vercel já converte o corpo da requisição para JSON automaticamente
-  const { image: imageBase64 } = request.body;
-
-  if (!imageBase64) {
-    return response.status(400).json({ message: 'Nenhuma imagem recebida.' });
-  }
-
-  // Pega a chave da API das variáveis de ambiente da Vercel
   const API_KEY = process.env.PLANTNET_API_KEY;
   const API_URL = `https://my-api.plantnet.org/v2/identify/all?lang=pt&api-key=${API_KEY}`;
-  
+
+  if (request.method !== 'POST') {
+    return response.status(405).json({ message: 'Apenas o método POST é permitido.' });
+  }
+
   try {
-    // Converte o texto Base64 de volta para uma imagem binária (Buffer)
+    const { image: imageBase64 } = request.body;
+
+    if (!imageBase64) {
+      return response.status(400).json({ message: 'Nenhuma imagem recebida.' });
+    }
+
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
     const imageBuffer = Buffer.from(base64Data, 'base64');
     
-    // Cria o "envelope" multipart/form-data que a PlantNet espera
     const formData = new FormData();
     formData.append('images', imageBuffer, { filename: 'plant.jpg' });
     formData.append('organs', 'auto');
     
-    // Envia a requisição formatada corretamente para a PlantNet
     const plantnetResponse = await fetch(API_URL, {
       method: 'POST',
       body: formData,
@@ -35,7 +33,11 @@ export default async function handler(request, response) {
 
     const data = await plantnetResponse.json();
     
-    // Retorna a resposta da PlantNet para o nosso frontend
+    if (!plantnetResponse.ok) {
+        console.error('Erro retornado pela API da PlantNet:', data);
+        return response.status(plantnetResponse.status).json(data);
+    }
+
     return response.status(200).json(data);
 
   } catch (error) {

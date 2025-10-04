@@ -4,7 +4,7 @@
 ![Licença](https://img.shields.io/badge/licença-MIT-blue)
 ![Tecnologias](https://img.shields.io/badge/tecnologias-HTML%20%7C%20CSS%20%7C%20JS%20%7C%20PWA-orange)
 
-> Link para a aplicação: **[Acesse o BotaniCap aqui!]([COLE O LINK DA VERCEL AQUI])**
+> Link para a aplicação: **https://botani-cap-web-app.vercel.app/**
 
 ## 🎯 Objetivo
 

@@ -1,6 +1,6 @@
-// /scripts/main.js (Versão com Proxy)
+// /scripts/main.js - VERSÃO FINAL
 
-// --- 1. SELEÇÃO DOS ELEMENTOS DO HTML E CONSTANTES --- //
+// --- 1. SELEÇÃO DOS ELEMENTOS DO HTML --- //
 const btnUpload = document.getElementById('btn-upload');
 const fileInput = document.getElementById('file-input');
 const btnNewPhoto = document.getElementById('btn-new-photo');
@@ -17,11 +17,6 @@ const plantScientificName = document.getElementById('plant-scientific-name');
 const plantScore = document.getElementById('plant-score');
 
 let identificationHistory = [];
-
-// !! IMPORTANTE !! Cole sua chave da API da PlantNet aqui
-const API_KEY = 'SUA_CHAVE_AQUI'; 
-const PROXY_URL = 'https://corsproxy.io/?';
-const API_URL = `${PROXY_URL}https://my-api.plantnet.org/v2/identify/all?lang=pt&api-key=${API_KEY}`;
 
 
 // --- 2. LÓGICA DE EVENTOS --- //
@@ -52,27 +47,27 @@ function handleImage(file) {
     reader.readAsDataURL(file);
 }
 
+// ESTA É A VERSÃO CORRETA DA FUNÇÃO, QUE USA BASE64
 async function identifyPlant(file, imageSrc) {
-    const formData = new FormData();
-    formData.append('images', file);
-    formData.append('organs', 'auto');
-
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch('/api/identify', {
             method: 'POST',
-            body: formData,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image: imageSrc }),
         });
 
         if (!response.ok) {
-            throw new Error(`Erro da API: ${response.statusText}`);
+            throw new Error(`Erro do servidor: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
         displayResults(data, imageSrc);
 
     } catch (error) {
-        console.error('Erro na chamada da API:', error);
-        alert('Não foi possível se conectar à API. Verifique sua conexão.');
+        console.error('Erro ao chamar a função de identificação:', error);
+        alert('Ocorreu um erro ao processar a identificação.');
         resetUI();
     }
 }
@@ -84,7 +79,7 @@ function displayResults(data, imageSrc) {
         const bestResult = data.results[0];
         const score = (bestResult.score * 100).toFixed(1);
         
-        const commonName = bestResult.species.commonNames.length > 0 ? bestResult.species.commonNames[0] : 'Nome não encontrado';
+        const commonName = bestResult.species.commonNames.length > 0 ? bestResult.species.commonNames[0] : 'Nome comum não encontrado';
         const scientificName = bestResult.species.scientificNameWithoutAuthor;
 
         plantCommonName.textContent = commonName;
@@ -117,18 +112,13 @@ function resetUI() {
 
 function renderHistory() {
     historyContainer.innerHTML = '';
-
     if (identificationHistory.length > 0) {
         const title = document.createElement('h3');
         title.textContent = 'Identificações Recentes';
-        title.style.textAlign = 'center';
-        title.style.width = '100%';
         historyContainer.appendChild(title);
     }
-
     for (let i = identificationHistory.length - 1; i >= 0; i--) {
         const item = identificationHistory[i];
-        
         const historyCard = document.createElement('div');
         historyCard.className = 'history-card';
         historyCard.innerHTML = `

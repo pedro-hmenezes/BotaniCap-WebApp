@@ -1,14 +1,15 @@
-// /api/identify.js - Versão definitiva para Vercel
+// /api/identify.js - VERSÃO FINAL
 
 const FormData = require('form-data');
+// O 'fetch' já vem com a Vercel, não precisamos do 'node-fetch'
+// const fetch = require('node-fetch');
 
 export default async function handler(request, response) {
-  // A Vercel já converte o corpo da requisição para JSON automaticamente para nós
+  // A Vercel já converte o corpo da requisição para JSON automaticamente
   const { image: imageBase64 } = request.body;
 
-  // Verificação para garantir que a imagem foi recebida
   if (!imageBase64) {
-    return response.status(400).json({ message: 'Nenhuma imagem recebida no corpo da requisição.' });
+    return response.status(400).json({ message: 'Nenhuma imagem recebida.' });
   }
 
   // Pega a chave da API das variáveis de ambiente da Vercel
@@ -39,6 +40,6 @@ export default async function handler(request, response) {
 
   } catch (error) {
     console.error('Erro na função da Vercel:', error);
-    return response.status(500).json({ message: 'Erro interno do servidor ao processar a imagem.' });
+    return response.status(500).json({ message: 'Erro interno do servidor.' });
   }
 }

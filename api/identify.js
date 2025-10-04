@@ -1,45 +1,44 @@
-// /api/identify.js
-import FormData from 'form-data';
+// /api/identify.js - Versão definitiva para Vercel
+
+const FormData = require('form-data');
 
 export default async function handler(request, response) {
-  const API_KEY = process.env.PLANTNET_API_KEY;
-  const API_URL = `https://my-api.plantnet.org/v2/identify/all?lang=pt&api-key=${API_KEY}`;
+  // A Vercel já converte o corpo da requisição para JSON automaticamente para nós
+  const { image: imageBase64 } = request.body;
 
-  if (request.method !== 'POST') {
-    return response.status(405).json({ message: 'Apenas o método POST é permitido.' });
+  // Verificação para garantir que a imagem foi recebida
+  if (!imageBase64) {
+    return response.status(400).json({ message: 'Nenhuma imagem recebida no corpo da requisição.' });
   }
 
+  // Pega a chave da API das variáveis de ambiente da Vercel
+  const API_KEY = process.env.PLANTNET_API_KEY;
+  const API_URL = `https://my-api.plantnet.org/v2/identify/all?lang=pt&api-key=${API_KEY}`;
+  
   try {
-    // 1. Recebe o JSON e extrai a string Base64 da imagem
-    const { image: imageBase64 } = request.body;
-
-    // 2. Converte a string Base64 de volta para um formato binário (Buffer)
-    //    Primeiro, remove o prefixo "data:image/jpeg;base64,"
+    // Converte o texto Base64 de volta para uma imagem binária (Buffer)
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
     const imageBuffer = Buffer.from(base64Data, 'base64');
     
-    // 3. Cria o "envelope" FormData
+    // Cria o "envelope" multipart/form-data que a PlantNet espera
     const formData = new FormData();
-    formData.append('images', imageBuffer, 'plant.jpg'); // Usa o Buffer da imagem
+    formData.append('images', imageBuffer, { filename: 'plant.jpg' });
     formData.append('organs', 'auto');
     
-    // 4. Envia o envelope para a PlantNet
+    // Envia a requisição formatada corretamente para a PlantNet
     const plantnetResponse = await fetch(API_URL, {
       method: 'POST',
       body: formData,
+      headers: formData.getHeaders(),
     });
 
-    if (!plantnetResponse.ok) {
-        const errorText = await plantnetResponse.text();
-        console.error('Erro da API da PlantNet:', errorText);
-        return response.status(plantnetResponse.status).json({ message: 'A API externa retornou um erro.' });
-    }
-
     const data = await plantnetResponse.json();
+    
+    // Retorna a resposta da PlantNet para o nosso frontend
     return response.status(200).json(data);
 
   } catch (error) {
-    console.error('Erro na função serverless:', error);
-    return response.status(500).json({ message: 'Erro no servidor ao identificar a planta.' });
+    console.error('Erro na função da Vercel:', error);
+    return response.status(500).json({ message: 'Erro interno do servidor ao processar a imagem.' });
   }
 }

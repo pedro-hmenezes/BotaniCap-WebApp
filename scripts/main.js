@@ -1,22 +1,30 @@
+// /scripts/main.js (Versão com Proxy)
+
+// --- 1. SELEÇÃO DOS ELEMENTOS DO HTML E CONSTANTES --- //
 const btnUpload = document.getElementById('btn-upload');
 const fileInput = document.getElementById('file-input');
 const btnNewPhoto = document.getElementById('btn-new-photo');
 
 const uploadArea = document.getElementById('upload-area');
-const resultArea = document.getElementById('result-area'); //resultado
-const historyContainer = document.getElementById('history-container'); //histórico
+const resultArea = document.getElementById('result-area');
+const historyContainer = document.getElementById('history-container');
 const imagePreview = document.getElementById('image-preview');
 const loader = document.getElementById('loader');
 const resultCard = document.getElementById('result-card');
 
-const plantCommonName = document.getElementById('plant-common-name'); // h2
-const plantScientificName = document.getElementById('plant-scientific-name'); // h4
+const plantCommonName = document.getElementById('plant-common-name');
+const plantScientificName = document.getElementById('plant-scientific-name');
 const plantScore = document.getElementById('plant-score');
 
-// variavel para guardar o historico da sessão
 let identificationHistory = [];
 
+// !! IMPORTANTE !! Cole sua chave da API da PlantNet aqui
+const API_KEY = 'SUA_CHAVE_AQUI'; 
+const PROXY_URL = 'https://corsproxy.io/?';
+const API_URL = `${PROXY_URL}https://my-api.plantnet.org/v2/identify/all?lang=pt&api-key=${API_KEY}`;
 
+
+// --- 2. LÓGICA DE EVENTOS --- //
 btnUpload.addEventListener('click', () => fileInput.click());
 btnNewPhoto.addEventListener('click', resetUI);
 
@@ -26,45 +34,45 @@ fileInput.addEventListener('change', (event) => {
 });
 
 
+// --- 3. FUNÇÕES PRINCIPAIS --- //
 function handleImage(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
         imagePreview.src = e.target.result;
         
         uploadArea.classList.add('hidden');
-        historyContainer.classList.add('hidden'); // esconde historico ao identificar
+        historyContainer.classList.add('hidden');
         resultCard.classList.add('hidden');
         resultArea.classList.remove('hidden');
         imagePreview.classList.remove('hidden');
         loader.classList.remove('hidden');
 
-        identifyPlant(file, e.target.result); // passa a imagem (file) e sua visualização (em base64)
+        identifyPlant(file, e.target.result);
     };
     reader.readAsDataURL(file);
 }
 
-async function identifyPlant(file, imageSrc) { // imageSrc é a nossa string Base64
+async function identifyPlant(file, imageSrc) {
+    const formData = new FormData();
+    formData.append('images', file);
+    formData.append('organs', 'auto');
+
     try {
-        // A URL continua a mesma, apontando para a nossa função
-        const response = await fetch('/api/identify', {
+        const response = await fetch(API_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json', // Agora enviamos JSON
-            },
-            // Enviamos um objeto JSON contendo a imagem como texto Base64
-            body: JSON.stringify({ image: imageSrc }),
+            body: formData,
         });
 
         if (!response.ok) {
-            throw new Error(`Erro do servidor: ${response.statusText}`);
+            throw new Error(`Erro da API: ${response.statusText}`);
         }
 
         const data = await response.json();
         displayResults(data, imageSrc);
 
     } catch (error) {
-        console.error('Erro ao chamar a função de identificação:', error);
-        alert('Ocorreu um erro ao processar a identificação.');
+        console.error('Erro na chamada da API:', error);
+        alert('Não foi possível se conectar à API. Verifique sua conexão.');
         resetUI();
     }
 }
@@ -76,7 +84,6 @@ function displayResults(data, imageSrc) {
         const bestResult = data.results[0];
         const score = (bestResult.score * 100).toFixed(1);
         
-        // primeiro nome comum, se existir. senão, usa o cientifico.
         const commonName = bestResult.species.commonNames.length > 0 ? bestResult.species.commonNames[0] : 'Nome não encontrado';
         const scientificName = bestResult.species.scientificNameWithoutAuthor;
 
@@ -84,7 +91,6 @@ function displayResults(data, imageSrc) {
         plantScientificName.textContent = scientificName;
         plantScore.textContent = `Confiança: ${score}%`;
         
-        // adiciona ao histórico
         identificationHistory.push({
             imageSrc: imageSrc,
             commonName: commonName,
@@ -99,22 +105,18 @@ function displayResults(data, imageSrc) {
     }
 }
 
-//reseta a interface para o estado inicial
 function resetUI() {
     uploadArea.classList.remove('hidden');
     resultArea.classList.add('hidden');
     
-    // mostra o historico de volta
     renderHistory();
     historyContainer.classList.remove('hidden');
 
-    // limpa o input de arquivo para permitir selecionar a mesma foto novamente
     fileInput.value = '';
 }
 
-//renderiza o historico de cards
 function renderHistory() {
-    historyContainer.innerHTML = ''; // limpa o container antes de renderizar
+    historyContainer.innerHTML = '';
 
     if (identificationHistory.length > 0) {
         const title = document.createElement('h3');
@@ -124,11 +126,9 @@ function renderHistory() {
         historyContainer.appendChild(title);
     }
 
-    // itera pelo histórico de tras para frente para mostrar o mais recente primeiro
     for (let i = identificationHistory.length - 1; i >= 0; i--) {
         const item = identificationHistory[i];
         
-        // cria o HTML do card de histórico
         const historyCard = document.createElement('div');
         historyCard.className = 'history-card';
         historyCard.innerHTML = `
@@ -143,8 +143,7 @@ function renderHistory() {
     }
 }
 
-
-// função para pegar o ano atual no rodape
+// Lógica do Rodapé
 (() => {
     const yearSpan = document.getElementById('current-year');
     if (yearSpan) {

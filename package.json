@@ -1,23 +1,4 @@
 {
-  "name": "identifica-planta",
-  "version": "1.0.0",
-  "description": "",
-  "main": "service-worker.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pedro-hmenezes/BotaniCap-WebApp.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/pedro-hmenezes/BotaniCap-WebApp/issues"
-  },
-  "homepage": "https://github.com/pedro-hmenezes/BotaniCap-WebApp#readme",
   "dependencies": {
     "form-data": "^4.0.4"
   }

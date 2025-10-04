@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>BotaniCap</title>
+
+    <link rel="stylesheet" href="assets/styles/style.css" />
+    <link rel="icon" href="./assets/images/icon-192x192.png" />
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <body>
+    <header>
+      <h1>BotaniCap</h1>
+    </header>
+
+    <main>
+      <div id="upload-area">
+        <p>
+          Tire uma foto nítida da folha ou da flor para melhores resultados.
+        </p>
+        <button id="btn-upload">Identificar Planta</button>
+        <input type="file" id="file-input" class="hidden" accept="image/*" />
+      </div>
+
+      <div id="history-container"></div>
+
+      <div id="result-area" class="hidden">
+        <img id="image-preview" alt="Pré-visualização da planta" />
+
+        <div id="loader" class="hidden"></div>
+
+        <div id="result-card" class="hidden">
+          <h2 id="plant-common-name">Nome Comum da Planta</h2>
+          <h4 id="plant-scientific-name">Nome Científico</h4>
+          <p id="plant-score">Confiança: 92%</p>
+        </div>
+
+        <button id="btn-new-photo">Identificar Outra Planta</button>
+      </div>
+    </main>
+
+    <footer>
+      <p>
+        &copy; <span id="current-year"></span> BotaniCap. Todos os direitos
+        reservados.
+      </p>
+    </footer>
+    <script src="scripts/config.js"></script>
+    <script src="scripts/main.js" defer></script>
+  </body>
+</html>

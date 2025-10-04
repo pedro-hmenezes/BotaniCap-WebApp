@@ -16,9 +16,6 @@ const plantScore = document.getElementById('plant-score');
 // variavel para guardar o historico da sessão
 let identificationHistory = [];
 
-const PROXY_URL = 'https://corsproxy.io/?';
-const API_URL = `${PROXY_URL}https://my-api.plantnet.org/v2/identify/all?lang=pt&api-key=${API_KEY}`;
-
 
 btnUpload.addEventListener('click', () => fileInput.click());
 btnNewPhoto.addEventListener('click', resetUI);
@@ -47,18 +44,28 @@ function handleImage(file) {
 }
 
 async function identifyPlant(file, imageSrc) {
-    const formData = new FormData();
-    formData.append('images', file);
-    formData.append('organs', 'auto');
-
     try {
-        const response = await fetch(API_URL, { method: 'POST', body: formData });
+        // A URL agora aponta para a NOSSA função segura na Vercel
+        const response = await fetch('/api/identify', {
+            method: 'POST',
+            body: file, // Enviamos o arquivo diretamente para a nossa "ponte"
+            headers: {
+                'Content-Type': file.type
+            }
+        });
+
+        if (!response.ok) {
+            // Se a resposta não for bem-sucedida, lança um erro
+            throw new Error(`Erro do servidor: ${response.statusText}`);
+        }
+
         const data = await response.json();
         displayResults(data, imageSrc);
+
     } catch (error) {
-        console.error('Erro na chamada da API:', error);
-        alert('Não foi possível se conectar à API.');
-        resetUI(); // reseta a UI em caso de erro
+        console.error('Erro ao chamar a função de identificação:', error);
+        alert('Ocorreu um erro ao processar a identificação.');
+        resetUI();
     }
 }
 

@@ -1,6 +1,4 @@
-/* --- Estilos Globais e Reset --- */
 * {
-    /* Garante que o tamanho dos elementos inclua padding e borda */
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -8,10 +6,8 @@
 
 body {
     font-family: sans-serif;
-    background-color: beige; /* Um bege claro, cor de areia/terra */
-    color: darkslategrey;    /* Um cinza-azulado escuro, como uma pedra de rio */
-    
-    /* Centraliza nosso conteúdo na tela */
+    background-color: beige;
+    color: darkslategrey;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,31 +15,30 @@ body {
     padding: 20px;
 }
 
-/* --- Cabeçalho --- */
+
 header {
     margin-bottom: 30px;
 }
 
 h1 {
-    color: forestgreen; /* Verde floresta, para o título principal */
+    color: forestgreen; 
     text-align: center;
 }
 
-/* --- Conteúdo Principal --- */
 main {
     width: 100%;
-    max-width: 500px; /* Limita a largura em telas grandes */
+    max-width: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px; /* Espaço entre os elementos */
+    gap: 20px;
 }
 
-/* --- Área de Upload --- */
+
 #upload-area {
     width: 100%;
-    border: 3px dashed lightgrey; /* Cinza claro */
-    border-radius: 15px; /* Bordas arredondadas para suavidade */
+    border: 3px dashed lightgrey;
+    border-radius: 15px;
     padding: 40px 20px;
     text-align: center;
 }
@@ -54,31 +49,30 @@ main {
 }
 
 #btn-upload {
-    background-color: forestgreen; /* Verde floresta */
-    color: white;               /* Branco */
+    background-color: forestgreen; 
+    color: white;               
     border: none;
     padding: 15px 30px;
     font-size: 1.2em;
     font-weight: bold;
     border-radius: 10px;
-    cursor: pointer; /* Muda o cursor para uma "mãozinha" */
-    transition: background-color 0.3s ease; /* Transição suave */
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
 }
 
 #btn-upload:hover {
-    background-color: darkgreen; /* Verde escuro ao passar o mouse */
+    background-color: darkgreen; 
 }
 
-/* --- Imagem e Resultado --- */
 #image-preview {
     max-width: 100%;
     height: auto;
     border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra suave */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
 }
 
 #result-card {
-    background-color: floralwhite; /* Um branco levemente amarelado, como uma flor */
+    background-color: floralwhite; 
     width: 100%;
     padding: 25px;
     border-radius: 15px;
@@ -86,7 +80,7 @@ main {
 }
 
 #result-card h2 {
-    color: darkgreen; /* Verde escuro */
+    color: darkgreen; 
     margin-bottom: 10px;
 }
 
@@ -96,28 +90,26 @@ main {
     color: darkslategrey;
 }
 
-/* --- Loader e Classe Utilitária --- */
+
 .hidden {
-    display: none; /* ESSENCIAL: Esconde os elementos */
+    display: none; 
 }
 
 #loader {
     width: 50px;
     height: 50px;
-    border: 5px solid lightgrey; /* Cinza claro */
-    border-top-color: forestgreen; /* Verde floresta */
-    border-radius: 50%; /* Transforma o quadrado em um círculo */
+    border: 5px solid lightgrey; 
+    border-top-color: forestgreen; 
+    border-radius: 50%; 
     animation: spin 1s linear infinite;
 }
 
-/* Animação que faz o loader girar */
 @keyframes spin {
     to {
         transform: rotate(360deg);
     }
 }
 
-/* --- Estilos do Histórico --- */
 #history-container {
     width: 100%;
     display: flex;
@@ -128,7 +120,7 @@ main {
 }
 
 .history-card {
-    background-color: white; /* Branco */
+    background-color: white; 
     width: 100%;
     display: flex;
     align-items: center;
@@ -141,7 +133,7 @@ main {
     width: 60px;
     height: 60px;
     border-radius: 8px;
-    object-fit: cover; /* Garante que a imagem não fique distorcida */
+    object-fit: cover; 
     margin-right: 15px;
 }
 
@@ -160,9 +152,8 @@ main {
     color: grey;
 }
 
-/* --- Estilos para o botão de Nova Foto --- */
 #btn-new-photo {
-    background-color: lightgrey; /* Cinza claro */
+    background-color: lightgrey; 
     color: black;
     border: none;
     padding: 10px 20px;
@@ -177,12 +168,11 @@ main {
     background-color: darkgrey;
 }
 
-/* --- Rodapé (Footer) --- */
 footer {
     width: 100%;
-    margin-top: auto; /* Truque mágico para empurrar o rodapé para baixo em uma flexbox */
+    margin-top: auto; 
     padding: 20px 10px;
     text-align: center;
     font-size: 0.9em;
-    color: grey; /* Um cinza para ser sutil */
+    color: grey; 
 }

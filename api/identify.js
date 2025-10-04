@@ -1,43 +1,39 @@
 // /api/identify.js
+import FormData from 'form-data';
 
 export default async function handler(request, response) {
-  // Pega a chave da API da variável de ambiente segura
   const API_KEY = process.env.PLANTNET_API_KEY;
   const API_URL = `https://my-api.plantnet.org/v2/identify/all?lang=pt&api-key=${API_KEY}`;
 
-  console.log('Função iniciada. Tentando identificar planta...');
-
-  // Verifica se a chave da API foi carregada
   if (!API_KEY) {
-    console.error('ERRO: A variável de ambiente PLANTNET_API_KEY não foi encontrada.');
-    return response.status(500).json({ message: 'Erro de configuração no servidor.' });
+    return response.status(500).json({ message: 'Chave da API não configurada.' });
   }
 
   try {
-    const plantnetResponse = await fetch(API_URL, {
-      method: 'POST',
-      body: request.body,
-      headers: {
-        'Content-Type': request.headers['content-type']
-      },
+    // 1. cria um novo 'envelope' (FormData) no servidor
+    const formData = new FormData();
+    
+    // 2. adiciona a imagem (que vem no corpo da requisição) ao envelope
+    //    o Vercel da o corpo como um buffer, que podemos usar diretamente
+    formData.append('images', request.body, {
+      filename: 'plant.jpg',
+      contentType: request.headers['content-type'],
     });
 
-    // Se a resposta da PlantNet não for OK (ex: erro 401, 403, 500)
-    if (!plantnetResponse.ok) {
-      const errorText = await plantnetResponse.text();
-      console.error('Erro da API da PlantNet:', errorText);
-      // Retorna uma resposta de erro, mas sem detalhes para o usuário final
-      return response.status(plantnetResponse.status).json({ message: 'A API externa retornou um erro.' });
-    }
+    // 3. adiciona o outro campo necessário
+    formData.append('organs', 'auto');
+
+    // 4. envia o envelope completo para a PlantNet
+    const plantnetResponse = await fetch(API_URL, {
+      method: 'POST',
+      body: formData,
+    });
 
     const data = await plantnetResponse.json();
-    console.log('Resposta da PlantNet recebida com sucesso.');
-    
-    // Envia a resposta da PlantNet de volta para o nosso app
     return response.status(200).json(data);
 
   } catch (error) {
-    console.error('Erro geral na função:', error);
+    console.error('Erro na função serverless:', error);
     return response.status(500).json({ message: 'Erro no servidor ao identificar a planta.' });
   }
 }

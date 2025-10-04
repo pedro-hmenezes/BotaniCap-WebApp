@@ -43,19 +43,19 @@ function handleImage(file) {
     reader.readAsDataURL(file);
 }
 
-async function identifyPlant(file, imageSrc) {
+async function identifyPlant(file, imageSrc) { // imageSrc é a nossa string Base64
     try {
-        // A URL agora aponta para a NOSSA função segura na Vercel
+        // A URL continua a mesma, apontando para a nossa função
         const response = await fetch('/api/identify', {
             method: 'POST',
-            body: file, // Enviamos o arquivo diretamente para a nossa "ponte"
             headers: {
-                'Content-Type': file.type
-            }
+                'Content-Type': 'application/json', // Agora enviamos JSON
+            },
+            // Enviamos um objeto JSON contendo a imagem como texto Base64
+            body: JSON.stringify({ image: imageSrc }),
         });
 
         if (!response.ok) {
-            // Se a resposta não for bem-sucedida, lança um erro
             throw new Error(`Erro do servidor: ${response.statusText}`);
         }
 

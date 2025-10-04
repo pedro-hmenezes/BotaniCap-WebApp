@@ -45,4 +45,4 @@ O projeto utiliza a **[PlantNet API](https://my.plantnet.org/)** para obter dado
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
-Feito com ❤️ por **[SEU NOME AQUI]**.
+Todos os Diretos Reservados à **[Pedro H. Menezes]**.
